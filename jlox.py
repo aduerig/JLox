@@ -1,4 +1,13 @@
-from scanner import Scanner
+import argparse
+
+# my imports
+from CharacterScanner import Scanner
+from TokenParser import Parser
+
+# will delete
+# from expression import Eval, Stringify, StringifyRPN, Binary, Grouping, Literal, Unary, Expression
+# from tokentype import Token, TokenType
+
 
 class Lox:
     def __init__(self, filename = None):
@@ -25,9 +34,42 @@ class Lox:
         scanner = Scanner(self, text)
         all_tokens = scanner.scan_tokens()
 
+        print('all tokens')
         for token in all_tokens:
             print(token)
 
+        print('parsing tokens')
+        token_parser = Parser(self, all_tokens)
+
+        # self.test_print_AST()
+
+    # def test_print_AST(self):
+    #     my_expr = Binary(
+    #         Unary(                                    
+    #             Token(TokenType.MINUS, "-", None, 1),      
+    #             Literal(123)),                        
+    #         Token(TokenType.STAR, "*", None, 1),           
+    #         Grouping(                                 
+    #             Literal(45.67))
+    #     )
+    #     print(my_expr.accept(Stringify))
+    #     print(my_expr.accept(StringifyRPN))
+
+    #     my_expr2 = Binary(
+    #         Binary(                                         
+    #             Literal(1),
+    #             Token(TokenType.PLUS, "+", None, 1),           
+    #             Literal(2)
+    #         ),
+    #         Token(TokenType.STAR, "*", None, 1),
+    #         Binary(                                         
+    #             Literal(4),
+    #             Token(TokenType.MINUS, "-", None, 1),           
+    #             Literal(3)
+    #         ),
+    #     )
+    #     print(my_expr2.accept(Stringify))
+    #     print(my_expr2.accept(StringifyRPN))
 
     def raise_error(self, line, message):
         self.has_errored = True
@@ -39,9 +81,19 @@ class Lox:
 
 
 if __name__ == "__main__":
-    # runs file
-    filename = 'test_script.lox'
-    Lox(filename)
 
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("-filename", default=None, type=str, help="Enter the filename you want Lox to run")
+    arg_parser.parse_args()
+
+    # filename = arg_parser.filename
+
+    # For testing, commment out for CIL args
+    filename = 'test_script.lox'
+    
+    # runs file
+    if filename:
+        Lox(filename)
     # runs prompt
-    # Lox()
+    else:
+        Lox()

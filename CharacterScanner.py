@@ -1,4 +1,4 @@
-from tokentype import TokenType, Token
+from TokenType import TokenType, Token
 
 class Scanner:
     def __init__(self, lox_instance, text):
@@ -34,10 +34,10 @@ class Scanner:
         token_type = None
 
         # single
-        if single_char == '(': token_type = TokenType.LEFT_PAREN
-        elif single_char == ')': token_type = TokenType.RIGHT_PAREN
-        elif single_char == '{': token_type = TokenType.LEFT_BRACE
-        elif single_char == '}': token_type = TokenType.RIGHT_BRACE
+        if single_char == '(': token_type = TokenType.OPEN_PAREN
+        elif single_char == ')': token_type = TokenType.CLOSE_PAREN
+        elif single_char == '{': token_type = TokenType.OPEN_BRACE
+        elif single_char == '}': token_type = TokenType.CLOSE_BRACE
         elif single_char == ',': token_type = TokenType.COMMA
         elif single_char == '.': token_type = TokenType.DOT
         elif single_char == '-': token_type = TokenType.MINUS
@@ -152,10 +152,3 @@ class Scanner:
 
         self.add_token(token_type, "")
         self.index += 1
-
-
-    def peek(self, text):
-        pass
-
-    # def make_token(self, TokenType, literal):
-        # return Token

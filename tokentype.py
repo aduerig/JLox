@@ -24,7 +24,7 @@ class Token():
 
 class TokenType(Enum):
     # Single-character tokens
-    LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE = auto(), auto(), auto(), auto()
+    OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE = auto(), auto(), auto(), auto()
     COMMA, DOT, MINUS, PLUS = auto(), auto(), auto(), auto()
     SEMICOLON, SLASH, STAR = auto(), auto(), auto()
 
