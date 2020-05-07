@@ -15,11 +15,15 @@ class Token():
 
 
     def __str__(self):
-        # desired_width = 22
+        padded_spaces = 0
+        if False: # change to False to not pad spaces
+            padded_spaces = " " * (max_width_of_enum - len(self.token_type.name))
         return 'line: {3}, {0} {4} : {1} : {2}'.format(
-            self.token_type, self.lexeme, self.literal, self.line, 
-            " " * (max_width_of_enum - len(self.token_type.name)))
-        # return '{0} : {1} : {2}'.format(self.token_type, self.lexeme, self.literal)
+            self.token_type, self.lexeme, self.literal, self.line, padded_spaces)
+
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class TokenType(Enum):
@@ -44,3 +48,10 @@ class TokenType(Enum):
 
     # Special
     EOF = auto()
+
+    def __str__(self):
+        return 'TokenType.{0}'.format(self.name)
+
+
+    def __repr__(self):
+        return 'TokenType.{0}'.format(self.name)

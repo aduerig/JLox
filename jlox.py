@@ -3,10 +3,10 @@ import argparse
 # my imports
 from CharacterScanner import Scanner
 from TokenParser import Parser
+from Interpretor import Interpretor
 
 # will delete
-# from expression import Eval, Stringify, StringifyRPN, Binary, Grouping, Literal, Unary, Expression
-# from tokentype import Token, TokenType
+from Expression import Eval, Stringify
 
 
 class Lox:
@@ -31,15 +31,18 @@ class Lox:
 
     
     def run(self, text):
+        print('JLOX: scanning characters')
         scanner = Scanner(self, text)
         all_tokens = scanner.scan_tokens()
 
-        print('all tokens')
-        for token in all_tokens:
-            print(token)
+        # for token in all_tokens:
+        #     print(token)
 
-        print('parsing tokens')
+        print('JLOX: parsing tokens')
         token_parser = Parser(self, all_tokens)
+        expression = token_parser.parse()
+        print(expression.accept(Stringify))
+        print(expression.accept(Eval))
 
         # self.test_print_AST()
 
@@ -71,6 +74,12 @@ class Lox:
     #     print(my_expr2.accept(Stringify))
     #     print(my_expr2.accept(StringifyRPN))
 
+
+    def raise_error_with_token(self, token, message):
+        self.has_errored = True
+        self.report_error(token.line, token, message)
+
+
     def raise_error(self, line, message):
         self.has_errored = True
         self.report_error(line, "", message)
@@ -89,7 +98,7 @@ if __name__ == "__main__":
     # filename = arg_parser.filename
 
     # For testing, commment out for CIL args
-    filename = 'test_script.lox'
+    filename = 'test_script2.lox'
     
     # runs file
     if filename:

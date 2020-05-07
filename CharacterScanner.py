@@ -25,13 +25,15 @@ class Scanner:
         return self.tokens
 
 
-    def add_token(self, token_type, str_value):
-        self.tokens.append(Token(token_type, str_value, None, self.curr_line))
+    def add_token(self, token_type, str_value, literal = None):
+        self.tokens.append(Token(token_type, str_value, literal, self.curr_line))
 
 
     def scan_single_token(self):
         single_char = self.text[self.index]
         token_type = None
+        tokens_read = 1
+        lexeme_read = single_char
 
         # single
         if single_char == '(': token_type = TokenType.OPEN_PAREN
@@ -53,21 +55,29 @@ class Scanner:
         if single_char == '!': 
             if second_char == '=':
                 token_type = TokenType.BANG_EQUAL
+                tokens_read = 2
+                lexeme_read = '!='
             else:
                 token_type = TokenType.BANG
         elif single_char == '=': 
             if second_char == '=':
                 token_type = TokenType.EQUAL_EQUAL
+                tokens_read = 2
+                lexeme_read = '=='
             else:
                 token_type = TokenType.EQUAL
         elif single_char == '<': 
             if second_char == '=':
                 token_type = TokenType.LESS_EQUAL
+                tokens_read = 2
+                lexeme_read = '<='
             else:
                 token_type = TokenType.LESS
         elif single_char == '>': 
             if second_char == '=':
                 token_type = TokenType.GREATER_EQUAL
+                tokens_read = 2
+                lexeme_read = '>='
             else:
                 token_type = TokenType.GREATER
 
@@ -92,7 +102,7 @@ class Scanner:
                 self.lox_instance.raise_error(self.curr_line, "Unterminated string")
                 return
             string_literal = self.text[start_quote_index:self.index]
-            self.add_token(TokenType.STRING, string_literal)
+            self.add_token(TokenType.STRING, string_literal, string_literal)
             self.curr_line += count_newlines
             if self.index != len(self.text):
                 self.index += 1
@@ -111,7 +121,7 @@ class Scanner:
                     return
                 self.index += 1
             number = self.text[start_number_index:self.index]
-            self.add_token(TokenType.NUMBER, float(number))
+            self.add_token(TokenType.NUMBER, number, float(number))
             return
 
         # Word (Keywords / Variables)
@@ -150,5 +160,5 @@ class Scanner:
                 "Unexpected character {0}".format(single_char))
             return
 
-        self.add_token(token_type, "")
-        self.index += 1
+        self.add_token(token_type, lexeme_read)
+        self.index += tokens_read
