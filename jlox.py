@@ -6,7 +6,8 @@ from TokenParser import Parser
 from Interpretor import Interpretor
 
 # will delete
-from Expression import Eval, Stringify
+from VisitExpression import EvaluateExpression, StringifyExpression
+from VisitStatement import StringifyStatement, EvaluateStatement
 
 
 class Lox:
@@ -31,18 +32,22 @@ class Lox:
 
     
     def run(self, text):
+        # Scanning: characters -> tokens
         print('JLOX: scanning characters')
         scanner = Scanner(self, text)
         all_tokens = scanner.scan_tokens()
 
-        # for token in all_tokens:
-        #     print(token)
-
-        print('JLOX: parsing tokens')
+        # Parsing: tokens -> statements
+        print('JLOX: parsing tokens into statements')
         token_parser = Parser(self, all_tokens)
-        expression = token_parser.parse()
-        print(expression.accept(Stringify))
-        print(expression.accept(Eval))
+        statements = token_parser.parse()
+        
+        # Intepreting: evaluating statements
+        print('JLOX: Execution beginning...')
+        for statement in statements:
+            # statement.accept(StringifyStatement)
+            statement.accept(EvaluateStatement)
+        print('JLOX: Execution ended...')
 
         # self.test_print_AST()
 
@@ -55,8 +60,8 @@ class Lox:
     #         Grouping(                                 
     #             Literal(45.67))
     #     )
-    #     print(my_expr.accept(Stringify))
-    #     print(my_expr.accept(StringifyRPN))
+    #     print(my_expr.accept(StringifyExpression))
+    #     print(my_expr.accept(StringifyExpressionRPN))
 
     #     my_expr2 = Binary(
     #         Binary(                                         
@@ -71,8 +76,8 @@ class Lox:
     #             Literal(3)
     #         ),
     #     )
-    #     print(my_expr2.accept(Stringify))
-    #     print(my_expr2.accept(StringifyRPN))
+    #     print(my_expr2.accept(StringifyExpression))
+    #     print(my_expr2.accept(StringifyExpressionRPN))
 
 
     def raise_error_with_token(self, token, message):
@@ -90,7 +95,6 @@ class Lox:
 
 
 if __name__ == "__main__":
-
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("-filename", default=None, type=str, help="Enter the filename you want Lox to run")
     arg_parser.parse_args()

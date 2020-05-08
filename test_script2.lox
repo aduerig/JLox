@@ -1,1 +1,9 @@
-4 + 4 - 5 * 7 / 8
+print 4 + 4 - 5 * 7 / 8;
+~print "garbage can";
+print 4 + 4 == 8;
+print -4 + 4 == 0;
+print -4 + 4 == -1;
+print -(4 + 2) - 2 == -8;
+print -(4 + 2) - 2 == -6;
+~print 4 + 4 - 5 * 7 / 8;
+~print 4 + 4 - 5 * 7 / 8;

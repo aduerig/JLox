@@ -1,36 +1,29 @@
-grammer_definition_file = 'basic.gram'
-grammer_class_filename_write = 'expression_output.py'
-
-
-indent = ' ' * 4
-base_expression_class_name = 'Expression'
-base_visitor_class_name = 'Visitor'
-visitor_types = ['Eval', 'Stringify']
-
 def write_visitor_info(write_file, all_expr_class_infos):
     write_file.write("class {0}:\n".format(base_visitor_class_name))
     write_file.write("{0}pass\n".format(indent))
     write_file.write('\n')
 
+    write_file.write("# Implementation for these visitor classes / functions defined elsewhere\n")
     for visitor_type in visitor_types:
-        write_file.write("class {0}:\n".format(visitor_type))
+        write_file.write("# class {0}:\n".format(visitor_type))
         for expr_class_name, field_arr in all_expr_class_infos.items():
-            write_file.write("{0}def visit_{1}(self, {2}_obj):\n".format(
+            write_file.write("# {0}@staticmethod\n".format(indent))
+            write_file.write("# {0}def visit_{1}({2}_obj):\n".format(
                 indent, expr_class_name.lower(), expr_class_name.lower()))
-            write_file.write("{0}pass\n".format(indent*2))
+            write_file.write("# {0}pass\n".format(indent*2))
             write_file.write('\n')
 
 
-def write_header_info(write_file, all_expr_class_infos):
-    write_file.write("# Expression Types:\n")
+def write_header_info(write_file, all_expr_class_infos, base_class_name):
+    write_file.write("# {0} Types:\n".format(base_class_name))
     write_file.write("# {0}{1}\n".format(indent, ', '.join(all_expr_class_infos.keys())))
     write_file.write("# \n")
     write_file.write("# Visitors (accepts) avaliable on types:\n")
     write_file.write("# {0}{1}\n\n".format(indent, ', '.join(visitor_types)))
 
 
-def write_expression_base_class(write_file):
-    write_file.write("class {0}:\n".format(base_expression_class_name))
+def write_base_class(write_file, base_class_name):
+    write_file.write("class {0}:\n".format(base_class_name))
     write_file.write("{0}def accept(self, visitor_obj):\n".format(indent))
     write_file.write("{0}visitor_class_name = self.__class__.__name__.lower()\n".format(indent*2))
     write_file.write("{0}method_name = 'visit_' + visitor_class_name\n".format(indent*2))
@@ -42,7 +35,7 @@ def write_expression_base_class(write_file):
 def read_line_from_grammar(write_file, line):
     colon_split = line.split(':')
     if len(colon_split) != 2:
-        if 'END GRAMMAR' not in line and line.rstrip().lstrip() != '':
+        if line.rstrip().lstrip() != '':
             print('Could not parse line in grammar', line)
         return None
 
@@ -57,10 +50,10 @@ def read_line_from_grammar(write_file, line):
     return read_obj
 
 
-def write_expression_classes(write_file, all_expr_class_infos):
+def write_classes(write_file, all_expr_class_infos, base_class_name):
     for expr_class_name, expr_class_fields in all_expr_class_infos.items():
         # Set-up for class
-        write_file.write("class {0}({1}):\n".format(expr_class_name, base_expression_class_name))
+        write_file.write("class {0}({1}):\n".format(expr_class_name, base_class_name))
         write_file.write("{0}def __init__({1}):\n".format(
             indent, ', '.join(
                 ['self'] + [var_name for var_type, var_name in expr_class_fields])))
@@ -73,15 +66,39 @@ def write_expression_classes(write_file, all_expr_class_infos):
         write_file.write('\n')
 
 
-# writing the actual class
-with open(grammer_definition_file, 'r') as read_file:
-    with open(grammer_class_filename_write, 'w') as write_file:
-        for line in read_file:
-            if 'START GRAMMAR' in line:
-                break
+base_expression_class_name = 'Expression'
+expression_grammar_definition = [
+    'Binary   : Expr left, Token operator, Expr right',
+    'Grouping : Expr expression',
+    'Literal  : Object value',
+    'Unary    : Token operator, Expr right'
+]
+expression_grammar = (base_expression_class_name, expression_grammar_definition)
 
+
+base_statement_class_name = 'Statement'
+statement_grammar_definition = [
+    'Expression : Expr expression',          
+    'Print      : Expr expression'
+]
+statement_grammar = (base_statement_class_name, statement_grammar_definition)
+
+
+all_grammars = [expression_grammar, statement_grammar]
+for base_class_name, grammar_definition in all_grammars:
+    # setup stuff for grammar
+    grammer_class_filename_write = '{0}_output.py'.format(base_class_name.lower())
+    indent = ' ' * 4
+    base_visitor_class_name = 'Visitor'
+    visitor_types = [
+        'Evaluate{0}'.format(base_class_name), 
+        'Stringify{0}'.format(base_class_name), 
+        'Stringify{0}RPN'.format(base_class_name)
+    ]
+    # writing the actual class
+    with open(grammer_class_filename_write, 'w') as write_file:
         all_expr_class_infos = {}
-        for line in read_file:
+        for line in grammar_definition:
             expr_class_info = read_line_from_grammar(write_file, line)
             if expr_class_info:
                 all_expr_class_infos.update(expr_class_info)
@@ -90,25 +107,24 @@ with open(grammer_definition_file, 'r') as read_file:
                 break
 
         # header
-        write_header_info(write_file, all_expr_class_infos)
+        write_header_info(write_file, all_expr_class_infos, base_class_name)
         
+        # writing expr info
+        write_base_class(write_file, base_class_name)
+
+        # writing expr info
+        write_classes(write_file, all_expr_class_infos, base_class_name)
+
         # visitor info
         write_visitor_info(write_file, all_expr_class_infos)
 
-        # writing expr info
-        write_expression_base_class(write_file)
+    # reads file, strips all trailing newlines and stores in temp string
+    with open(grammer_class_filename_write, 'r') as write_file:
+        new_str = write_file.read().rstrip('\n')
 
-        # writing expr info
-        write_expression_classes(write_file, all_expr_class_infos)
+    # overwrites file with tempstring
+    with open(grammer_class_filename_write, 'w') as write_file:
+        write_file.write(new_str)
 
-
-# reads file, strips all trailing newlines and stores in temp string
-with open(grammer_class_filename_write, 'r') as write_file:
-    new_str = write_file.read().rstrip('\n')
-
-# overwrites file with tempstring
-with open(grammer_class_filename_write, 'w') as write_file:
-    write_file.write(new_str)
-
-print('Created "{0}" file from "{1}" file'.format(
-    grammer_class_filename_write, grammer_definition_file))
+    print('Created "{0}" file using {1} grammar'.format(
+        grammer_class_filename_write, grammar_definition))
