@@ -43,10 +43,9 @@ class Lox:
         statements = token_parser.parse()
         
         # Intepreting: evaluating statements
+        interpretor = Interpretor(self)
         print('JLOX: Execution beginning...')
-        for statement in statements:
-            # statement.accept(StringifyStatement)
-            statement.accept(EvaluateStatement)
+        interpretor.interpret(statements)
         print('JLOX: Execution ended...')
 
         # self.test_print_AST()
