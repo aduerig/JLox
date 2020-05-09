@@ -19,5 +19,10 @@ class Print(Statement):
     def __init__(self, expression):
         self.expression = expression # type: Expr
 
+class Var(Statement):
+    def __init__(self, name, initializer):
+        self.name = name # type: Token
+        self.initializer = initializer # type: Expr
+
 class Visitor:
     pass

@@ -1,19 +1,21 @@
 
 TO INPUT EXPRESSION:
     base_expression_class_name = 'Expression'
-    grammar_definition = [
+    expression_grammar_definition = [
         'Binary   : Expr left, Token operator, Expr right',
         'Grouping : Expr expression',
         'Literal  : Object value',
-        'Unary    : Token operator, Expr right'
+        'Unary    : Token operator, Expr right',
+        'Variable : Token token_obj',
     ]
 
 
 TO INPUT STATEMENT:
-    base_expression_class_name = 'Statement'
-    grammar_definition = [
+    base_statement_class_name = 'Statement'
+    statement_grammar_definition = [
         'Expression : Expr expression',          
-        'Print      : Expr expression'
+        'Print      : Expr expression',
+        'Var        : Token name, Expr initializer'
     ]
 
 
@@ -34,6 +36,17 @@ unary      → ( "-" | "!" ) expression ;
 binary     → expression operator expression ;
 operator   → "==" | "!=" | "<" | "<=" | ">" | ">="
            | "+"  | "-"  | "*" | "/" ;
+
+
+program     → declaration* EOF ;
+
+declaration → varDecl
+            | statement ;
+
+statement   → exprStmt
+            | printStmt ;
+
+
 
 
 

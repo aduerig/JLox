@@ -35,3 +35,7 @@ class Unary(Expression):
     def __init__(self, operator, right):
         self.operator = operator # type: Token
         self.right = right # type: Expr
+
+class Variable(Expression):
+    def __init__(self, token_obj):
+        self.token_obj = token_obj # type: Token

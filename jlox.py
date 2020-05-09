@@ -101,7 +101,7 @@ if __name__ == "__main__":
     # filename = arg_parser.filename
 
     # For testing, commment out for CIL args
-    filename = 'test_script2.lox'
+    filename = 'test_script3.lox'
     
     # runs file
     if filename:

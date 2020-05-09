@@ -25,7 +25,7 @@ class Parser:
             print('PARSER: started')
             statements = []
             while self.tokens[self.index].token_type != TokenType.EOF:
-                statements.append(self.statement())
+                statements.append(self.declaritive_statement())
             print('PARSER: gracefully ended')
             return statements
         except ParseError:
@@ -71,6 +71,26 @@ class Parser:
         self.last_line = curr.line
         self.index += 1
         return curr
+
+
+    def declaritive_statement(self):
+        try:
+            if self.curr_token_is([TokenType.VAR]):
+                return self.var_statement()
+            return self.statement()
+        # Implement syncronization of parsing errors here
+        except Exception as e:
+            raise e
+
+    
+    def var_statement(self):
+        self.pop_token()
+        identifier_token = self.pop_token_expect([TokenType.IDENTIFIER], 'Expecting variable name')
+        if self.curr_token_is([TokenType.EQUAL]):
+            self.pop_token()
+            initializer_expression = self.expression()
+        self.pop_token_expect([TokenType.SEMICOLON], 'Expecting semicolon after variable declaration / assignment')
+        return Statement.Var(identifier_token, initializer_expression)
 
 
     def statement(self):
@@ -168,6 +188,9 @@ class Parser:
             error_msg = 'PARSER ERROR: Expecting one of: {0}, but got {1}'.format(primary_tokens, curr_token.token_type)
             self.lox_instance.raise_error_with_token(curr_token, error_msg)
             raise ParseError()
+
+        if curr_token.token_type == TokenType.IDENTIFIER:
+            return Expression.Variable(curr_token)
 
         primary_token_map = {
             TokenType.NUMBER: curr_token.literal,

@@ -54,6 +54,11 @@ class EvaluateExpression:
         else:
             raise Exception('ok?')
 
+
+    @staticmethod
+    def visit_variable(variable_obj):
+        return variable_obj.token_obj.lexeme
+
 class StringifyExpressionRPN:
     @staticmethod
     def visit_binary(binary_obj):
@@ -76,6 +81,11 @@ class StringifyExpressionRPN:
     def visit_unary(unary_obj):
         return unary_obj.right.accept(StringifyExpressionRPN) + unary_obj.operator.lexeme
 
+
+    @staticmethod
+    def visit_variable(variable_obj):
+        return variable_obj.token_obj.lexeme
+
 class StringifyExpression:
     @staticmethod
     def visit_binary(binary_obj):
@@ -97,3 +107,8 @@ class StringifyExpression:
     @staticmethod
     def visit_unary(unary_obj):
         return unary_obj.operator.lexeme  + '(' + unary_obj.right.accept(StringifyExpression) + ')'
+
+
+    @staticmethod
+    def visit_variable(variable_obj):
+        return variable_obj.token_obj.lexeme

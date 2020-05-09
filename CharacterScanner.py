@@ -128,7 +128,7 @@ class Scanner:
         elif single_char.isalpha():
             start_word_index = self.index
             self.index += 1
-            while self.index < len(self.text) and self.text[self.index] not in ['~', ' ', '\r', '\t', '\n']:
+            while self.index < len(self.text) and self.text[self.index] not in ['~', ' ', '\r', '\t', '\n', ';']:
                 self.index += 1
             word = self.text[start_word_index:self.index]
             keyword_map = {
