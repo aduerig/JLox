@@ -182,7 +182,7 @@ class Parser:
             self.pop_token_expect([TokenType.CLOSE_PAREN], 'PARSER ERROR: Expecting right parenthesis')
             return Expression.Grouping(paren_expr)
 
-        primary_tokens = [TokenType.NUMBER, TokenType.STRING, TokenType.FALSE, TokenType.TRUE, TokenType.NIL]
+        primary_tokens = [TokenType.NUMBER, TokenType.STRING, TokenType.FALSE, TokenType.TRUE, TokenType.NIL, TokenType.IDENTIFIER]
         curr_token = self.pop_token()
         if curr_token.token_type not in primary_tokens:
             error_msg = 'PARSER ERROR: Expecting one of: {0}, but got {1}'.format(primary_tokens, curr_token.token_type)

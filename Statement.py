@@ -20,8 +20,8 @@ class Print(Statement):
         self.expression = expression # type: Expr
 
 class Var(Statement):
-    def __init__(self, name, initializer):
-        self.name = name # type: Token
+    def __init__(self, token_obj, initializer):
+        self.token_obj = token_obj # type: Token
         self.initializer = initializer # type: Expr
 
 class Visitor:

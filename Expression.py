@@ -6,16 +6,9 @@
 
 from TokenType import TokenType
 
-
-class Visitor:
-    pass
-
 class Expression:
     def accept(self, visitor_obj):
-        visitor_class_name = self.__class__.__name__.lower()
-        method_name = 'visit_' + visitor_class_name
-        func_to_call = getattr(visitor_obj, method_name)
-        return func_to_call(self)
+        return visitor_obj.visit(self)
 
 class Binary(Expression):
     def __init__(self, left, operator, right):

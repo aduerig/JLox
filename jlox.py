@@ -6,8 +6,8 @@ from TokenParser import Parser
 from Interpretor import Interpretor
 
 # will delete
-from VisitExpression import EvaluateExpression, StringifyExpression
-from VisitStatement import StringifyStatement, EvaluateStatement
+# from VisitExpression import EvaluateExpression, StringifyExpression
+# from VisitStatement import StringifyStatement, EvaluateStatement
 
 
 class Lox:
@@ -47,37 +47,6 @@ class Lox:
         print('JLOX: Execution beginning...')
         interpretor.interpret(statements)
         print('JLOX: Execution ended...')
-
-        # self.test_print_AST()
-
-    # def test_print_AST(self):
-    #     my_expr = Binary(
-    #         Unary(                                    
-    #             Token(TokenType.MINUS, "-", None, 1),      
-    #             Literal(123)),                        
-    #         Token(TokenType.STAR, "*", None, 1),           
-    #         Grouping(                                 
-    #             Literal(45.67))
-    #     )
-    #     print(my_expr.accept(StringifyExpression))
-    #     print(my_expr.accept(StringifyExpressionRPN))
-
-    #     my_expr2 = Binary(
-    #         Binary(                                         
-    #             Literal(1),
-    #             Token(TokenType.PLUS, "+", None, 1),           
-    #             Literal(2)
-    #         ),
-    #         Token(TokenType.STAR, "*", None, 1),
-    #         Binary(                                         
-    #             Literal(4),
-    #             Token(TokenType.MINUS, "-", None, 1),           
-    #             Literal(3)
-    #         ),
-    #     )
-    #     print(my_expr2.accept(StringifyExpression))
-    #     print(my_expr2.accept(StringifyExpressionRPN))
-
 
     def raise_error_with_token(self, token, message):
         self.has_errored = True

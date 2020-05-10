@@ -95,7 +95,7 @@ for base_class_name, grammar_definition in all_grammars:
     visitor_types = [
         'Evaluate{0}'.format(base_class_name), 
         'Stringify{0}'.format(base_class_name), 
-        'Stringify{0}RPN'.format(base_class_name)
+        # 'Stringify{0}RPN'.format(base_class_name)
     ]
     # writing the actual class
     with open(grammer_class_filename_write, 'w') as write_file:
