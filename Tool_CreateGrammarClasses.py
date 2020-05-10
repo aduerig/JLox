@@ -1,6 +1,10 @@
 def write_visitor_info(write_file, all_expr_class_infos):
     write_file.write("class {0}:\n".format(base_visitor_class_name))
-    write_file.write("{0}pass\n".format(indent))
+    write_file.write("{0}def accept(self, obj):\n".format(indent))
+    write_file.write("{0}visitor_class_name = obj.__class__.__name__.lower()\n".format(indent*2))
+    write_file.write("{0}method_name = 'visit_' + visitor_class_name\n".format(indent*2))
+    write_file.write("{0}func_to_call = getattr(self, method_name)\n".format(indent*2))
+    write_file.write("{0}return func_to_call(obj)\n".format(indent*2))
     write_file.write('\n')
 
     write_file.write("# Implementation for these visitor classes / functions defined elsewhere\n")
@@ -25,10 +29,7 @@ def write_header_info(write_file, all_expr_class_infos, base_class_name):
 def write_base_class(write_file, base_class_name):
     write_file.write("class {0}:\n".format(base_class_name))
     write_file.write("{0}def accept(self, visitor_obj):\n".format(indent))
-    write_file.write("{0}visitor_class_name = self.__class__.__name__.lower()\n".format(indent*2))
-    write_file.write("{0}method_name = 'visit_' + visitor_class_name\n".format(indent*2))
-    write_file.write("{0}func_to_call = getattr(visitor_obj, method_name)\n".format(indent*2))
-    write_file.write("{0}return func_to_call(self)\n".format(indent*2))
+    write_file.write("{0}visitor_obj.visit(self)\n".format(indent*2))
     write_file.write('\n')
 
 
@@ -68,11 +69,12 @@ def write_classes(write_file, all_expr_class_infos, base_class_name):
 
 base_expression_class_name = 'Expression'
 expression_grammar_definition = [
-    'Binary   : Expr left, Token operator, Expr right',
-    'Grouping : Expr expression',
-    'Literal  : Object value',
-    'Unary    : Token operator, Expr right',
-    'Variable : Token name',
+    'Assignment : Token name, Expr right',
+    'Binary     : Expr left, Token operator, Expr right',
+    'Grouping   : Expr expression',
+    'Literal    : Object value',
+    'Unary      : Token operator, Expr right',
+    'Variable   : Token token_obj',
 ]
 expression_grammar = (base_expression_class_name, expression_grammar_definition)
 
