@@ -158,6 +158,7 @@ class Scanner:
         if token_type is None:
             self.lox_instance.raise_error(self.curr_line, 
                 "Unexpected character {0}".format(single_char))
+            self.index += tokens_read
             return
 
         self.add_token(token_type, lexeme_read)

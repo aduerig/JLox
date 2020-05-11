@@ -1,6 +1,7 @@
 from TokenType import TokenType, Token
 import Expression
 import Statement
+from Stringify import Stringify
 
 
 class ParseError(Exception):
@@ -14,17 +15,16 @@ class Parser:
         self.index = 0
         self.last_line = 1
     
-
-    # def curr_token_is(self, legal_tokens):
-    #     return self.index < len(self.tokens) and \
-    #         self.tokens[self.index] in legal_tokens
+    
+    def at_end_of_tokens(self):
+        return self.tokens[self.index].token_type == TokenType.EOF
 
     # parses the list of expressions given to the class
     def parse(self):
         try:
             print('PARSER: started')
             statements = []
-            while self.tokens[self.index].token_type != TokenType.EOF:
+            while not self.at_end_of_tokens():
                 statements.append(self.declaritive_statement())
             print('PARSER: gracefully ended')
             return statements
@@ -47,11 +47,6 @@ class Parser:
         return self.tokens[self.index].token_type in legal_tokens
 
 
-    # def peek(self):
-    #     # self.raise_if_out_of_range()
-    #     return self.tokens[self.index]
-
-
     def pop_token(self):
         # self.raise_if_out_of_range()
         curr = self.tokens[self.index]
@@ -64,7 +59,8 @@ class Parser:
         # self.raise_if_out_of_range()
         curr = self.tokens[self.index]
         if curr.token_type not in expecting_type_arr:
-            exception_msg = 'pop_token_expect: was expecting a type from'.format(expecting_type_arr)
+            exception_msg = 'pop_token_expect: got {0}, was expecting a type from {1}'.format(
+                curr, expecting_type_arr)
             if given_exception_msg:
                 exception_msg = given_exception_msg
             raise Exception(exception_msg)
@@ -72,7 +68,7 @@ class Parser:
         self.index += 1
         return curr
 
-
+    ## Statements ##
     def declaritive_statement(self):
         try:
             if self.curr_token_is([TokenType.VAR]):
@@ -86,6 +82,7 @@ class Parser:
     def var_statement(self):
         self.pop_token()
         identifier_token = self.pop_token_expect([TokenType.IDENTIFIER], 'Expecting variable name')
+        initializer_expression = None
         if self.curr_token_is([TokenType.EQUAL]):
             self.pop_token()
             initializer_expression = self.expression()
@@ -94,45 +91,83 @@ class Parser:
 
 
     def statement(self):
-        if self.curr_token_is([TokenType.PRINT]):
+        if self.curr_token_is([TokenType.IF]):
+            return self.if_statement()
+        elif self.curr_token_is([TokenType.PRINT]):
             return self.print_statement()
+        elif self.curr_token_is([TokenType.OPEN_BRACE]):
+            return self.block_statement()
         return self.expression_statement()
 
 
+    def if_statement(self):
+        self.pop_token()
+        condition = self.expression()
+        if not self.curr_token_is([TokenType.OPEN_BRACE]):
+            raise Exception('if statement needs a { after it')
+        then_branch = self.block_statement()
+        
+        else_branch = None
+        if self.curr_token_is([TokenType.ELSE]):
+            self.pop_token()
+            if not self.curr_token_is([TokenType.OPEN_BRACE]):
+                raise Exception('else statement needs a { after it')
+            else_branch = self.block_statement()
+
+        return Statement.If(condition, then_branch, else_branch)
+
+
     def print_statement(self):
-        # print('new print_statement', self.index, self.tokens[self.index:])
         self.pop_token()
         expression = self.expression()
         self.pop_token_expect([TokenType.SEMICOLON])
         return Statement.Print(expression)
 
 
+    def block_statement(self):
+        self.pop_token()
+        statements = []
+        while not self.at_end_of_tokens() and not self.curr_token_is([TokenType.CLOSE_BRACE]):
+            statements.append(self.declaritive_statement())
+        if self.at_end_of_tokens():
+            raise Exception('Missing }, program ended before block closed')
+        self.pop_token()
+        return Statement.Block(statements)
+
+
     def expression_statement(self):
-        # print('new expression_statement', self.index, self.tokens[self.index:])
         expression = self.expression()
         self.pop_token_expect([TokenType.SEMICOLON])
         return Statement.Expression(expression)
 
 
+    ## Expressions ##
     def expression(self):
-        # print('new expression', self.index, self.tokens[self.index:])
-        return self.equality()
+        return self.assignment()
+
+
+    def assignment(self):
+        curr_expr = self.equality()
+        if self.curr_token_is([TokenType.EQUAL]):
+            self.pop_token()
+            right_side = self.assignment()
+            if isinstance(curr_expr, Expression.Variable):
+                return Expression.Assignment(curr_expr.token_obj, right_side)
+            raise Exception('PARSER: Invalid assignment target {0}'.format(curr_expr.accept(Stringify())))
+        return curr_expr
 
 
     def equality(self):
-        # print('equality', self.index)
         curr_expr = self.comparison()
         equality_ops = [TokenType.EQUAL_EQUAL, TokenType.BANG_EQUAL]
         while self.curr_token_is(equality_ops):
             operator = self.pop_token()
-            # print('equality looking for right side', self.index)
             right_side = self.comparison()
             curr_expr = Expression.Binary(curr_expr, operator, right_side)
         return curr_expr
 
 
     def comparison(self):
-        # print('comparison', self.index)
         curr_expr = self.addition()
         compare_ops = [TokenType.LESS, TokenType.LESS_EQUAL, TokenType.GREATER, TokenType.GREATER_EQUAL]
         while self.curr_token_is(compare_ops):
@@ -143,7 +178,6 @@ class Parser:
 
 
     def addition(self):
-        # print('addition', self.index)
         curr_expr = self.multiplication()
         addition_ops = [TokenType.MINUS, TokenType.PLUS]
         while self.curr_token_is(addition_ops):
@@ -154,7 +188,6 @@ class Parser:
 
 
     def multiplication(self):
-        # print('multiplication', self.index)
         curr_expr = self.unary()
         mult_ops = [TokenType.STAR, TokenType.SLASH]
         while self.curr_token_is(mult_ops):
@@ -165,7 +198,6 @@ class Parser:
 
 
     def unary(self):
-        # print('unary', self.index)
         unary_ops = [TokenType.MINUS, TokenType.BANG]
         if self.curr_token_is(unary_ops):
             operator = self.pop_token()
@@ -175,7 +207,6 @@ class Parser:
 
 
     def primary(self):
-        # print('primary', self.index)
         if self.curr_token_is([TokenType.OPEN_PAREN]):
             self.pop_token()
             paren_expr = self.expression()

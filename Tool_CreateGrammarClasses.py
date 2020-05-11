@@ -11,8 +11,7 @@ def write_visitor_info(write_file, all_expr_class_infos):
     for visitor_type in visitor_types:
         write_file.write("class {0}:\n".format(visitor_type))
         for expr_class_name, field_arr in all_expr_class_infos.items():
-            write_file.write("{0}@staticmethod\n".format(indent))
-            write_file.write("{0}def visit_{1}({2}_obj):\n".format(
+            write_file.write("{0}def visit_{1}(self, {2}_obj):\n".format(
                 indent, expr_class_name.lower(), expr_class_name.lower()))
             write_file.write("{0}pass\n".format(indent*2))
             write_file.write('\n')
@@ -81,9 +80,11 @@ expression_grammar = (base_expression_class_name, expression_grammar_definition)
 
 base_statement_class_name = 'Statement'
 statement_grammar_definition = [
+    'Block      : List<Statement> statements',
     'Expression : Expr expression',          
+    'If         : Expr condition, Statement then_branch, Statemenet else_branch',
     'Print      : Expr expression',
-    'Var        : Token name, Expr initializer'
+    'Var        : Token name, Expr initializer',
 ]
 statement_grammar = (base_statement_class_name, statement_grammar_definition)
 

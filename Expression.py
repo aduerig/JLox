@@ -10,6 +10,11 @@ class Expression:
     def accept(self, visitor_obj):
         return visitor_obj.visit(self)
 
+class Assignment(Expression):
+    def __init__(self, token_obj, right):
+        self.token_obj = token_obj # type: Token
+        self.right = right # type: Expr
+
 class Binary(Expression):
     def __init__(self, left, operator, right):
         self.left = left # type: Expr

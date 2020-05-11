@@ -2,11 +2,11 @@ from TokenType import TokenType, Token
 from Visitor import Visitor
 
 
-# Evaluates statements
+# Evaluates statements + expressions
 class Interpretor(Visitor):
     def __init__(self, lox_instance):
         self.lox_instance = lox_instance
-        self.data = {}
+        self.data = {'#parent_level#': None}
 
     
     def interpret(self, statements):
@@ -14,23 +14,52 @@ class Interpretor(Visitor):
             statement.accept(self)
 
 
-    def evaluate_expression(self, expression):
-        return expression.accept(self)
-    
-
     def define(self, token_obj, value):
         self.data[token_obj.lexeme] = value
 
 
-    def get(self, token_obj):
-        if token_obj.lexeme in self.data:
-            return self.data[token_obj.lexeme]
-        raise Exception('Undefined variable {0}'.format(token_obj.lexeme))
+    def assign(self, token_obj, value):
+        curr_level = self.data
+        while curr_level:
+            if token_obj.lexeme in curr_level:
+                curr_level[token_obj.lexeme] = value
+                return
+            curr_level = curr_level['#parent_level#']
+        raise Exception('Variable {0} not defined. Line {1}: Please '.format(
+                token_obj.lexeme, token_obj.line) + 'use var to define the variable before assignment')
 
+
+    def get(self, token_obj):
+        curr_level = self.data
+        while curr_level:
+            if token_obj.lexeme in curr_level:
+                return curr_level[token_obj.lexeme]
+            curr_level = curr_level['#parent_level#']
+        raise Exception('Undefined variable {0}'.format(token_obj))
+
+
+    def evaluate(self, expression):
+        return expression.accept(self)
+    
 
     ## Statement visitors ##
+    def visit_block(self, block_obj):
+        new_scoped_data = {'#parent_level#': self.data}
+        self.data = new_scoped_data
+        self.interpret(block_obj.statements)
+        self.data = self.data['#parent_level#']
+        # print('left')
+
+
     def visit_expression(self, expression_obj):
         expression_obj.expression.accept(self)
+
+    
+    def visit_if(self, if_obj):
+        if self.evaluate(if_obj.condition):
+            return self.evaluate(if_obj.then_branch)
+        if if_obj.else_branch:
+            return self.evaluate(if_obj.else_branch)
 
 
     def visit_print(self, print_obj):
@@ -38,19 +67,30 @@ class Interpretor(Visitor):
 
 
     def visit_var(self, var_obj):
-        result = self.evaluate_expression(var_obj.initializer)
+        result = None
+        if var_obj.initializer:
+            result = self.evaluate(var_obj.initializer)
         self.define(var_obj.token_obj, result)
 
-    ## Expression visitors ##
+
+    ## Expression land ##
     # helper function
     def is_truthy(self, value):
         if value is bool or value is None:
             return False
         return True
 
+
+    ## Expression visitors ##
+    def visit_assignment(self, assignment_obj):
+        evaluated_expression = self.evaluate(assignment_obj.right)
+        self.assign(assignment_obj.token_obj, evaluated_expression)
+        return evaluated_expression
+
+
     def visit_binary(self, binary_expression):
-        left_evaled = self.evaluate_expression(binary_expression.left)
-        right_evaled = self.evaluate_expression(binary_expression.right)
+        left_evaled = self.evaluate(binary_expression.left)
+        right_evaled = self.evaluate(binary_expression.right)
         # need to add a ton of type checks
         f_map = {
             TokenType.PLUS: lambda a, b: a + b,
@@ -68,7 +108,7 @@ class Interpretor(Visitor):
 
 
     def visit_grouping(self, grouping_expression):
-        return self.evaluate_expression(grouping_expression.expression)
+        return self.evaluate(grouping_expression.expression)
 
 
     def visit_literal(self, literal_expression):
@@ -76,7 +116,7 @@ class Interpretor(Visitor):
 
 
     def visit_unary(self, unary_expression):
-        evaled = self.evaluate_expression(unary_expression.right)
+        evaled = self.evaluate(unary_expression.right)
         if unary_expression.operator.token_type == TokenType.MINUS:
             return -evaled
         elif unary_expression.operator.token_type == TokenType.BANG:

@@ -1,13 +1,17 @@
 import argparse
+import sys
 
 # my imports
 from CharacterScanner import Scanner
 from TokenParser import Parser
 from Interpretor import Interpretor
 
-# will delete
-# from VisitExpression import EvaluateExpression, StringifyExpression
-# from VisitStatement import StringifyStatement, EvaluateStatement
+
+def excepthook(type, value, traceback):
+    print(value)
+if True:
+    print('JLOX: WARNING! Diasbling Python stack trace')
+    sys.excepthook = excepthook
 
 
 class Lox:
@@ -70,7 +74,8 @@ if __name__ == "__main__":
     # filename = arg_parser.filename
 
     # For testing, commment out for CIL args
-    filename = 'test_script3.lox'
+    filename = 'test_script2.lox'
+    # filename = 'test_script3.lox'
     
     # runs file
     if filename:
