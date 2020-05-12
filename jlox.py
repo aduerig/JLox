@@ -7,13 +7,6 @@ from TokenParser import Parser
 from Interpretor import Interpretor
 
 
-def excepthook(type, value, traceback):
-    print(value)
-if True:
-    print('JLOX: WARNING! Diasbling Python stack trace')
-    sys.excepthook = excepthook
-
-
 class Lox:
     def __init__(self, filename = None):
         self.has_errored = False
@@ -66,20 +59,38 @@ class Lox:
         print('ERROR : [line: {0}] : {1} : {2}'.format(line, where, message))
 
 
+# To disable python's stack trace
+def excepthook(type, value, traceback):
+    print(value)
+
+
+def disable_python_stack_trace():
+    print('JLOX: WARNING! Diasbling Python stack trace')
+    sys.excepthook = excepthook
+
+
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("-filename", default=None, type=str, help="Enter the filename you want Lox to run")
-    arg_parser.parse_args()
+    arg_parser.add_argument('-e', '--enable_stack_trace', default=False, action='store_true', help="enables python stack trace")
+    arg_parser.add_argument('-i', '--interactive', default=False, action='store_true', help="interactive")
+    arg_parser.add_argument('-f', '--filename', default=None, type=str, help="Enter the filename you want Lox to run")
+    args = arg_parser.parse_args()
 
-    # filename = arg_parser.filename
 
-    # For testing, commment out for CIL args
-    filename = 'test_script2.lox'
-    # filename = 'test_script3.lox'
-    
-    # runs file
-    if filename:
-        Lox(filename)
-    # runs prompt
-    else:
+    # interactive prompt
+    print(args)
+    if not args.enable_stack_trace:
+        disable_python_stack_trace()
+
+    # interactive prompt
+    if args.interactive:
         Lox()
+
+    # for no argument testing
+    filename = args.filename
+    if not filename:
+        filename = 'test_script2.lox'
+        # filename = 'test_script3.lox'
+
+    # runs file
+    Lox(filename)

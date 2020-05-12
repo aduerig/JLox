@@ -71,6 +71,7 @@ expression_grammar_definition = [
     'Assignment : Token name, Expr right',
     'Binary     : Expr left, Token operator, Expr right',
     'Grouping   : Expr expression',
+    'Call       : Expr callee, Token paren, List<Expr> arguments',
     'Literal    : Object value',
     'Unary      : Token operator, Expr right',
     'Variable   : Token token_obj',
@@ -81,10 +82,12 @@ expression_grammar = (base_expression_class_name, expression_grammar_definition)
 base_statement_class_name = 'Statement'
 statement_grammar_definition = [
     'Block      : List<Statement> statements',
-    'Expression : Expr expression',          
-    'If         : Expr condition, Statement then_branch, Statemenet else_branch',
+    'Expression : Expr expression',
+    'Function   : Token token_obj, List<Token> param_token_objs, List<Stmt> body',
+    'If         : Expr condition, Statement then_branch, Statement else_branch',
     'Print      : Expr expression',
-    'Var        : Token name, Expr initializer',
+    'Var        : Token token_obj, Expr initializer',
+    'While      : Expr condition, Statement then_branch',
 ]
 statement_grammar = (base_statement_class_name, statement_grammar_definition)
 

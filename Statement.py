@@ -19,6 +19,12 @@ class Expression(Statement):
     def __init__(self, expression):
         self.expression = expression # type: Expr
 
+class Function(Statement):
+    def __init__(self, token_obj, param_token_objs, body):
+        self.token_obj = token_obj # type: Token
+        self.param_token_objs = param_token_objs # type: List<Token>
+        self.body = body # type: List<Stmt>
+
 class If(Statement):
     def __init__(self, condition, then_branch, else_branch):
         self.condition = condition # type: Expr
@@ -33,6 +39,15 @@ class Var(Statement):
     def __init__(self, token_obj, initializer):
         self.token_obj = token_obj # type: Token
         self.initializer = initializer # type: Expr
+
+class While(Statement):
+    def __init__(self, condition, then_branch):
+        self.condition = condition # type: Expr
+        self.then_branch = then_branch # type: Statement
+
+class Maybe(Statement):
+    def __init__(self, then_branch):
+        self.then_branch = then_branch # type: Statement
 
 class Visitor:
     pass

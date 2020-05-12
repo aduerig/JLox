@@ -25,6 +25,12 @@ class Grouping(Expression):
     def __init__(self, expression):
         self.expression = expression # type: Expr
 
+class Call(Expression):
+    def __init__(self, callee, paren, argument_values):
+        self.callee = callee # type: Expr
+        self.paren = paren # type: Token
+        self.argument_values = argument_values # type: List<Expr>
+
 class Literal(Expression):
     def __init__(self, value):
         self.value = value # type: Object

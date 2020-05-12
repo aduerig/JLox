@@ -47,6 +47,7 @@ class Scanner:
         elif single_char == ';': token_type = TokenType.SEMICOLON
         elif single_char == '*': token_type = TokenType.STAR
         elif single_char == '/': token_type = TokenType.SLASH
+        elif single_char == '%': token_type = TokenType.PERCENT
         
         # single or double
         second_char = None
@@ -128,7 +129,8 @@ class Scanner:
         elif single_char.isalpha():
             start_word_index = self.index
             self.index += 1
-            while self.index < len(self.text) and self.text[self.index] not in ['~', ' ', '\r', '\t', '\n', ';']:
+            while self.index < len(self.text) and \
+                    (self.text[self.index].isalnum() or self.text[self.index] in ['_']):
                 self.index += 1
             word = self.text[start_word_index:self.index]
             keyword_map = {
@@ -148,6 +150,7 @@ class Scanner:
                 'true': TokenType.TRUE,
                 'var': TokenType.VAR,
                 'while': TokenType.WHILE,
+                'maybe': TokenType.MAYBE,
             }
             if word in keyword_map:
                 self.add_token(keyword_map[word], "")

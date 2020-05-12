@@ -30,7 +30,7 @@ class TokenType(Enum):
     # Single-character tokens
     OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE = auto(), auto(), auto(), auto()
     COMMA, DOT, MINUS, PLUS = auto(), auto(), auto(), auto()
-    SEMICOLON, SLASH, STAR = auto(), auto(), auto()
+    SEMICOLON, SLASH, STAR, PERCENT = auto(), auto(), auto(), auto()
 
     # One or two character tokens                  
     BANG, BANG_EQUAL = auto(), auto()
@@ -43,7 +43,7 @@ class TokenType(Enum):
 
     # Keywords                                     
     AND, CLASS, ELSE, FALSE, FUN = auto(), auto(), auto(), auto(), auto()
-    FOR, IF, NIL, OR, PRINT = auto(), auto(), auto(), auto(), auto()
+    FOR, IF, NIL, OR, PRINT, MAYBE = auto(), auto(), auto(), auto(), auto(), auto()
     RETURN, SUPER, THIS, TRUE, VAR, WHILE = auto(), auto(), auto(), auto(), auto(), auto()
 
     # Special
