@@ -55,6 +55,20 @@ class Stringify(Visitor):
             function_obj.body.accept(self))
 
 
+    def visit_if(self, if_obj):
+        else_string = ""
+        if if_obj.else_branch:
+            else_string = '\n' + 'else\n' +  if_obj.else_branch.accept(self)
+        return 'if ({0})\n{1}{2}'.format(
+            if_obj.condition.accept(self),
+            if_obj.then_branch.accept(self),
+            else_string)
+
+
+    def visit_return(self, return_obj):
+        pass
+
+
     def visit_while(self, while_obj):
         body = while_obj.then_branch.accept(self)
         return 'while {0}\n{1}'.format(

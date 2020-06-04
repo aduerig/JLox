@@ -86,6 +86,7 @@ statement_grammar_definition = [
     'Function   : Token token_obj, List<Token> param_token_objs, List<Stmt> body',
     'If         : Expr condition, Statement then_branch, Statement else_branch',
     'Print      : Expr expression',
+    'Return     : Expr expression',
     'Var        : Token token_obj, Expr initializer',
     'While      : Expr condition, Statement then_branch',
 ]

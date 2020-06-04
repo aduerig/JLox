@@ -5,6 +5,12 @@ from Visitor import Visitor
 from LoxFunction import LoxFunction, ClockLoxFunction
 from Stringify import Stringify
 
+
+class ReturnValue(Exception):
+    def __init__(self, expression_evaluated):
+        self.expression_evaluated = expression_evaluated
+
+
 # Evaluates statements + expressions
 class Interpretor(Visitor):
     def __init__(self, lox_instance):
@@ -19,7 +25,10 @@ class Interpretor(Visitor):
     ## Execution helpers ##
     def interpret(self, statements):
         for statement in statements:
-            statement.accept(self)
+            try:
+                statement.accept(self)
+            except ReturnValue as ret_value:
+                return ret_value.expression_evaluated
 
 
     def evaluate(self, expression):
@@ -30,8 +39,9 @@ class Interpretor(Visitor):
     def execute_block_with_scope(self, scope, block_obj):
         save = self.local_data_scope
         self.local_data_scope = scope
-        self.interpret(block_obj.statements)
+        ok = self.interpret(block_obj.statements)
         self.local_data_scope = save
+        return ok
 
 
     def define(self, scope, token_obj, value):
@@ -61,6 +71,10 @@ class Interpretor(Visitor):
     def visit_block(self, block_obj):
         new_scope = {'#parent_level#': self.local_data_scope}
         self.execute_block_with_scope(new_scope, block_obj)
+
+
+    def visit_return(self, return_obj):
+        raise ReturnValue(self.evaluate(return_obj.expression))
 
 
     def visit_expression(self, expression_obj):

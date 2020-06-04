@@ -13,7 +13,7 @@ class LoxFunction:
         new_scope = {'#parent_level#': intepretor.global_data_scope}
         for param_token_obj, argument_value in zip(self.declaration.param_token_objs, argument_values):
             intepretor.define(new_scope, param_token_obj, argument_value)
-        intepretor.execute_block_with_scope(new_scope, self.declaration.body)
+        return intepretor.execute_block_with_scope(new_scope, self.declaration.body)
     
 
     def __str__(self):

@@ -31,6 +31,10 @@ class If(Statement):
         self.then_branch = then_branch # type: Statement
         self.else_branch = else_branch # type: Statement
 
+class Return(Statement):
+    def __init__(self, expression):
+        self.expression = expression # type: Expr
+
 class Print(Statement):
     def __init__(self, expression):
         self.expression = expression # type: Expr

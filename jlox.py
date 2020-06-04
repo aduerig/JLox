@@ -78,7 +78,6 @@ if __name__ == "__main__":
 
 
     # interactive prompt
-    print(args)
     if not args.enable_stack_trace:
         disable_python_stack_trace()
 

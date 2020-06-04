@@ -73,7 +73,9 @@ class Parser:
     ## Statements ##
     def declaritive_statement(self):
         try:
-            if self.curr_token_is([TokenType.FUN]):
+            if self.curr_token_is([TokenType.RETURN]):
+                return self.return_statement()
+            elif self.curr_token_is([TokenType.FUN]):
                 return self.function_declaration()
             elif self.curr_token_is([TokenType.VAR]):
                 return self.var_statement()
@@ -81,6 +83,15 @@ class Parser:
         # Implement syncronization of parsing errors here
         except Exception as e:
             raise e
+
+
+    def return_statement(self):
+        self.pop_token()
+        return_expression = self.expression()
+        self.pop_token_expect([TokenType.SEMICOLON], 'Expecting a ; after return parameter')
+
+        return_statement = Statement.Return(return_expression)
+        return return_statement
 
 
     def function_declaration(self):
@@ -156,6 +167,7 @@ class Parser:
             initializer,
             while_statement
         ]
+        # print(Statement.Block(the_statements).accept(Stringify()))
         return Statement.Block(the_statements)
 
 
