@@ -13,8 +13,8 @@ class Parser:
         self.tokens = tokens
         self.index = 0
         self.last_line = 1
-    
-    
+
+
     def at_end_of_tokens(self):
         return self.tokens[self.index].token_type == TokenType.EOF
 

@@ -1,6 +1,6 @@
 import random
 
-from TokenType import TokenType, Token
+from TokenType import TokenType
 from Visitor import Visitor
 from LoxFunction import LoxFunction, ClockLoxFunction
 from Stringify import Stringify
@@ -33,7 +33,7 @@ class Interpretor(Visitor):
 
     def evaluate(self, expression):
         return expression.accept(self)
-    
+
 
     # implement
     def execute_block_with_scope(self, scope, block_obj):
@@ -124,7 +124,7 @@ class Interpretor(Visitor):
 
     # Helpers for visit_binary
     def logical_op_helper(self, op_token, binary_expression):
-        if op_token == TokenType.OR: 
+        if op_token == TokenType.OR:
             left_evaled = self.evaluate(binary_expression.left)
             if self.is_truthy(left_evaled):
                 return left_evaled

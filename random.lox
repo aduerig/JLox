@@ -1,0 +1,18 @@
+var my_num = 28;
+
+fun something(lmao)
+{
+    print(lmao);
+    print("something idk");
+}
+
+
+something(my_num);  
+
+maybe
+{
+    if my_num
+    {
+        my_num = my_num - 1;
+    }
+}

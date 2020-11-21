@@ -27,7 +27,7 @@ class Lox:
             self.run(user_input)
             self.has_errored = False
 
-    
+
     def run(self, text):
         # Scanning: characters -> tokens
         print('JLOX: scanning characters')
@@ -38,7 +38,7 @@ class Lox:
         print('JLOX: parsing tokens into statements')
         token_parser = Parser(self, all_tokens)
         statements = token_parser.parse()
-        
+
         # Intepreting: evaluating statements
         interpretor = Interpretor(self)
         print('JLOX: Execution beginning...')
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     # for no argument testing
     filename = args.filename
     if not filename:
-        filename = 'test_script2.lox'
+        filename = 'random.lox'
         # filename = 'test_script3.lox'
 
     # runs file

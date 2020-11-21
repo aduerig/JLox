@@ -1,6 +1,6 @@
 # Statement Types:
 #     Expression, Print
-# 
+#
 # Visitors (accepts) avaliable on types:
 #     EvaluateStatement, StringifyStatement, StringifyStatementRPN
 
